@@ -121,44 +121,14 @@ class Courier:
                 ## If distance to restaurant greater than timestep distance
                 ## move as close as possible to restaurant
                 if dist_to_restaurant > timestep_dist:
-                    restaurant_x, restaurant_y = self.curr_order[0]
-                    curr_x, curr_y = self.location
-                    x_dist = restaurant_x - curr_x
-                    ## First move along x-axis
-                    if abs(x_dist) > timestep_dist:
-                        self.location = (curr_x + timestep_dist * np.sign(x_dist), curr_y)
-                        timestep_dist = 0
-                    else:
-                        timestep_dist -= abs(x_dist)
-                        self.location = (curr_x + x_dist, curr_y)
-                    ## Second move along y-axis
-                    curr_x, curr_y = self.location
-                    y_dist = restaurant_y - curr_y
-                    self.location = (curr_x, curr_y + timestep_dist * np.sign(y_dist))
-
+                    timestep_dist = self.partial_move(timestep_dist, 0)
                 ## Else, move to restaurant, then as close as possible to delivery house
                 else:
                     timestep_dist -= dist_to_restaurant
                     self.location = self.curr_order[0]
                     old_curr = self.curr_order
                     self.curr_order = (self.curr_order[1], self.curr_order[1])
-
-                    house_x, house_y = self.curr_order[1]
-                    curr_x, curr_y = self.location
-                    x_dist = house_x - curr_x
-                    ## First move along x-axis
-                    if abs(x_dist) > timestep_dist:
-                        self.location = (
-                            curr_x + timestep_dist * np.sign(x_dist), curr_y)
-                        timestep_dist = 0
-                    else:
-                        timestep_dist -= abs(x_dist)
-                        self.location = (curr_x + x_dist, curr_y)
-                    ## Second move along y-axis
-                    curr_x, curr_y = self.location
-                    y_dist = house_y - curr_y
-                    self.location = (curr_x, curr_y +
-                                     timestep_dist * np.sign(y_dist))
+                    self.partial_move(timestep_dist, 1)
                 
                 if visualize:
                     print(
@@ -174,3 +144,22 @@ class Courier:
         if visualize:
             print('End:')
             print(f'L_{t} = {self.queue_distance}, A_{t} = {self.new_distance}, S_{t} = {self.speed}, Queue Length: {len(self.order_queue) + add}')
+    
+    def partial_move(self, timestep_dist, i):
+        dst_x, dst_y = self.curr_order[i]
+        curr_x, curr_y = self.location
+        x_dist = dst_x - curr_x
+        ## First move along x-axis
+        if abs(x_dist) > timestep_dist:
+            self.location = (
+                curr_x + timestep_dist * np.sign(x_dist), curr_y)
+            timestep_dist = 0
+        else:
+            timestep_dist -= abs(x_dist)
+            self.location = (curr_x + x_dist, curr_y)
+        ## Second move along y-axis
+        curr_x, curr_y = self.location
+        y_dist = dst_y - curr_y
+        self.location = (curr_x, curr_y + timestep_dist * np.sign(y_dist))
+
+        return timestep_dist
