@@ -4,7 +4,7 @@ The goal of this group thesis project was to apply reinforcement learning to a s
 
 ## Simulation
 
-The coolest files are [OrderSimulatorr]() and [Courier]() which implement the classes that are used to simulate the problem. 
+The coolest files are [OrderSimulator](https://github.com/trombonee/delivery-simulation/blob/master/Simulation/OrderSimulator.py) and [Courier](https://github.com/trombonee/delivery-simulation/blob/master/Simulation/Courier.py) which implement the classes that are used to simulate the problem. 
 
 When an OrderSimulator is initialized, a grid containing randomly placed houses, restaurants and couriers is created. The simulation works in timesteps (1 hour for example), where each house will place orders determined using a poisson clock. When a house places an order, it is randomly assigned to a restaurant (planning to add a distribution map to determine which restaurant the order is from). After orders are generated, they get assigned to a courier that will deliver them (this is where Q-Learning will be applied eventually).
 
