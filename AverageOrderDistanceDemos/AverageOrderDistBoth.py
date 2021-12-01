@@ -1,4 +1,6 @@
-from OrderSimulator import Order_Simulator
+import os, sys
+sys.path.append(os.getcwd())
+from Simulation.OrderSimulator import Order_Simulator
 
 for i in range(5):
     sim = Order_Simulator(4, 2, 2, 10)

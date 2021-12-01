@@ -3,6 +3,7 @@ import numpy as np
 import os, sys
 sys.path.append(os.getcwd())
 from Simulation.Courier import Courier
+import copy
 
 class Order_Simulator():
 
@@ -13,6 +14,36 @@ class Order_Simulator():
         self.order_rate = order_rate
         self.initialize_restaurants_and_houses()
         self.initialize_couriers()
+    
+    def grid_loader(self, restaurants, couriers):
+        self.restaurants = {}
+        for i,r in enumerate(restaurants):
+            self.restaurants[i] = r
+        
+        self.num_restaurants = len(self.restaurants)
+        
+        self.couriers = {}
+        for i, c in enumerate(couriers):
+            self.couriers[i] = Courier(self, 15)
+            self.couriers[i].location = c
+        
+        self.num_couriers = len(self.couriers)
+        
+        all_locations = []
+        for i in range(self.grid_length):
+            for j in range(self.grid_length):
+                all_locations.append((i, j))
+
+        self.houses = {}
+        count = 0
+        for loc in all_locations:
+            if loc in self.restaurants.values():
+                continue      
+            self.houses[count] = loc
+            count += 1
+
+
+
 
     def initialize_restaurants_and_houses(self):
         '''
@@ -205,9 +236,13 @@ class Order_Simulator():
         dist2 = [0] * self.num_couriers
         order_count3 = [0] * self.num_couriers
         dist3 = [0] * self.num_couriers
-        couriers_1 = self.couriers.copy()
-        couriers_2 = self.couriers.copy()
-        couriers_3 = self.couriers.copy()
+        couriers_1 = copy.deepcopy(self.couriers)
+        couriers_2 = copy.deepcopy(self.couriers)
+        couriers_3 = copy.deepcopy(self.couriers)
+        track_simple = []
+        track_nearest = []
+        track_shortest = []
+
         for j in range(iters):
             orders = self.generate_orders_for_timestep()
             for i, order in enumerate(orders):
@@ -234,10 +269,18 @@ class Order_Simulator():
                 courier_2.add_order(restaurant, house)
                 courier_3.add_order(restaurant, house)
 
+            sum1, sum2, sum3 = 0, 0, 0 
             for courier1, courier2, courier3 in zip(couriers_1.values(), couriers_2.values(), couriers_3.values()):
                 courier1.perform_deliveries(visualize=None)
                 courier2.perform_deliveries(visualize=None)
                 courier3.perform_deliveries(visualize=None)
+                sum1 += courier1.queue_distance
+                sum2 += courier2.queue_distance
+                sum3 += courier3.queue_distance
+            
+            track_simple.append(sum1)
+            track_nearest.append(sum2)
+            track_shortest.append(sum3)
 
         dist_tot1, dist_tot2, dist_tot3 = 0, 0, 0
         num1, num2, num3 = 0, 0, 0
@@ -250,12 +293,15 @@ class Order_Simulator():
             num3 += order_count3[i]
             print(
                 f'Courier {i} average order distance (Simple): {dist1[i]/order_count1[i]}')
-            print(
+            if order_count2[i] > 0:
+                print(
                 f'Courier {i} average order distance (Greedy): {dist2[i]/order_count2[i]}')
             print(
                 f'Courier {i} average order distance (Shortest Queue): {dist3[i]/order_count3[i]}')
         print(f'Overall average (Simple): {dist_tot1 / num1}')
         print(f'Overall average (Greedy): {dist_tot2 / num2}')
         print(f'Overall average (Shortest Queue): {dist_tot3 / num3}')
+
+        return track_simple, track_nearest, track_shortest
 
     
