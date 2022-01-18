@@ -8,6 +8,10 @@ import copy
 class Order_Simulator():
 
     def __init__(self, grid_length, num_restaurants, num_couriers, order_rate):
+        '''
+        Initialize function will save information about current state space layout
+        and create the restaurants, houses and couriers
+        '''
         self.grid_length = grid_length
         self.num_restaurants = num_restaurants
         self.num_couriers = num_couriers
@@ -16,6 +20,11 @@ class Order_Simulator():
         self.initialize_couriers()
     
     def grid_loader(self, restaurants, couriers):
+        '''
+        This function can be used to load in a custom state space (for testing purposes)
+        Restaurants: An array of coordinates where restuarants should be
+        Couriers: An array of cooridinates where couriers should be
+        '''
         self.restaurants = {}
         for i,r in enumerate(restaurants):
             self.restaurants[i] = r
@@ -41,9 +50,6 @@ class Order_Simulator():
                 continue      
             self.houses[count] = loc
             count += 1
-
-
-
 
     def initialize_restaurants_and_houses(self):
         '''
@@ -106,6 +112,12 @@ class Order_Simulator():
             arr[y][x] += 'C' + str(courier_num)
             
         for row in arr: print(row)
+    
+    '''
+    Below are all the custom simulations that can be run
+    They are very similar but differ in how they assign orders
+    (greedy, random, etc)
+    '''
     
     def simple_simulation(self, visualize=False, timestep=None):
         '''
