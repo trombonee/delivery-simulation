@@ -21,9 +21,9 @@ for i in range(6):
 
     x = range(iters)
 
-    plt.plot(x, ret_val[0], label='Simple')
-    plt.plot(x, ret_val[1], label='Nearest')
-    plt.plot(x, ret_val[2], label='Shortest Queue')
+    plt.plot(x, ret_val[0], label='L_t Simple')
+    plt.plot(x, ret_val[1], label='L_t Nearest')
+    plt.plot(x, ret_val[2], label='L_t Shortest Queue')
     plt.title(f'Order Rate = {order_rate[i]}')
     plt.legend()
     plt.show()
